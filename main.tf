@@ -8,7 +8,7 @@ resource "aws_spot_instance_request" "rabbitmq" {
   iam_instance_profile = aws_iam_instance_profile.main.name
 
   user_data = base64encode(templatefile("${path.module}/userdata.sh", {
-    component = rabbitmq
+    component = "rabbitmq"
     env = var.env
   } ))
 
