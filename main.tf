@@ -34,6 +34,51 @@ resource "aws_route53_record" "www" {
   records = [aws_spot_instance_request.rabbitmq.private_ip]
 }
 
+
+
+#resource "aws_security_group" "main" {
+#  name        = "rabbitmq-${var.env}"
+#  description = "rabbitmq-${var.env}"
+#  vpc_id      = var.vpc_id
+#
+#  ingress {
+#    description = "RABBITMQ"
+#    from_port   = 5672
+#    to_port     = 5672
+#    protocol    = "tcp"
+#    cidr_blocks = var.allow_subnets
+#  }
+#
+#  ingress {
+#    description = "RABBITMQ"
+#    from_port   = 22
+#    to_port     = 22
+#    protocol    = "tcp"
+#    cidr_blocks = var.bastion_cidr
+#  }
+#
+#  tags = merge(
+#    var.tags,
+#    { Name = "rabbitmq-${var.env}" }
+#  )
+#}
+#
+#
+##resource "aws_vpc_security_group_ingress_rule" "ingress2" {
+##  security_group_id = aws_security_group.main.id
+##  cidr_ipv4         = var.allow_app_to
+##  from_port         = var.port
+##  ip_protocol       = "tcp"
+##  to_port           = var.port
+##  description = "APP"
+##}
+#
+#resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
+#  security_group_id = aws_security_group.main.id
+#  cidr_ipv4         = "0.0.0.0/0"
+#  ip_protocol       = "-1" # semantically equivalent to all ports
+#}
+
 resource "aws_security_group" "main" {
   name        = "rabbitmq-${var.env}"
   description = "rabbitmq-${var.env}"
@@ -47,20 +92,20 @@ resource "aws_security_group" "main" {
     cidr_blocks = var.allow_subnets
   }
 
-  ingress {
-    description = "RABBITMQ"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = var.bastion_cidr
-  }
-
   tags = merge(
     var.tags,
-    { Name = "rabbitmq-${var.env}" }
+    { Name = "${var.component}-${var.env}" }
   )
 }
 
+resource "aws_vpc_security_group_ingress_rule" "ingress" {
+  security_group_id = aws_security_group.main.id
+  cidr_ipv4         = var.bastion_cidr
+  from_port         = 22
+  ip_protocol       = "tcp"
+  to_port           = 22
+  description = "SSH"
+}
 
 #resource "aws_vpc_security_group_ingress_rule" "ingress2" {
 #  security_group_id = aws_security_group.main.id
