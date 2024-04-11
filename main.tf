@@ -1,4 +1,3 @@
-# Request a spot instance at $0.03
 resource "aws_spot_instance_request" "rabbitmq" {
   ami           = data.aws_ami.ami.id
   instance_type = var.instance_type
@@ -26,7 +25,7 @@ resource "aws_ec2_tag" "name-tag" {
   value       = "rabbitmq-${var.env}"
 }
 
-resource "aws_route53_record" "www" {
+resource "aws_route53_record" "main" {
   zone_id = data.aws_route53_zone.domain.zone_id
   name    = "rabbitmq-${var.env}.${var.dns_domain}"
   type    = "A"
